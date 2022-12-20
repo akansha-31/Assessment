@@ -36,9 +36,8 @@ def get_all_commits(request):
         json.dump(json_data, outfile, default=str, indent=4)
     return HttpResponse("commit")
 
-
 def get_all_repos(request):
-    github = Github("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")
+    github = Github("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")
     organization = github.get_organization(request.session['organization'])
 
     repos = []
