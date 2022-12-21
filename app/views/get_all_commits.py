@@ -2,7 +2,6 @@ from django.shortcuts import HttpResponse
 import csv
 from github import Github
 import json 
-from app.views import get_all_repos
 
 def get_all_commits(request):
     all_commits = []
@@ -26,7 +25,7 @@ def get_all_commits(request):
     json_data['all_commits'] = sorted_commits
     with open("data.json", "w") as outfile:
         json.dump(json_data, outfile, default=str, indent=4)
-    return HttpResponse("commit")
+    return HttpResponse(sorted_commits)
 
 
 def get_all_repos():
