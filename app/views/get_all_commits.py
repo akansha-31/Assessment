@@ -5,7 +5,7 @@ import json
 
 def get_all_commits(request):
     all_commits = []
-    repos = get_all_repos()
+    repos = get_all_repos(request)
     column_names = ['committer', 'timestamp']
 
     with open("all_commits.csv", "w") as csvfile:
@@ -28,9 +28,9 @@ def get_all_commits(request):
     return HttpResponse(sorted_commits)
 
 
-def get_all_repos():
-    github = Github('akansha-31', 'Siroliya@123')
-    organization = github.get_organization('coindcx-official')
+def get_all_repos(request):
+    github = Github('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')
+    organization = github.get_organization(request.session['organization'])
 
     repos = []
     for repo in organization.get_repos():
