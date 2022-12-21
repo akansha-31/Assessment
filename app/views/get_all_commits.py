@@ -38,7 +38,7 @@ def get_all_commits(request):
 
 
 def get_all_repos(request):
-    github = Github(env['TOKEN'])
+    github = Github(env('TOKEN'))
 
     organization = github.get_organization(request.session['organization'])
 
