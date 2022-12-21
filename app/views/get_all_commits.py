@@ -16,7 +16,7 @@ def get_all_commits(request):
             for commit in repo.get_commits():
                 commits = {}
                 if commit.author == None:
-                    break
+                    continue
                 else:
                     commits['username'] = commit.author.login
                     commits['committer'] = commit.commit.author.name
@@ -33,7 +33,7 @@ def get_all_commits(request):
 
 
 def get_all_repos(request):
-    github = Github('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')
+    github = Github('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')
     organization = github.get_organization(request.session['organization'])
 
     repos = []
