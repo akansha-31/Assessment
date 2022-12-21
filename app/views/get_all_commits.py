@@ -2,6 +2,11 @@ from django.shortcuts import HttpResponse
 import csv
 from github import Github
 import json 
+import environ
+
+env = environ.Env()
+# reading .env file
+environ.Env.read_env()
 
 def get_all_commits(request):
     all_commits = []
@@ -33,7 +38,8 @@ def get_all_commits(request):
 
 
 def get_all_repos(request):
-    github = Github('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')
+    github = Github(env['TOKEN'])
+
     organization = github.get_organization(request.session['organization'])
 
     repos = []
