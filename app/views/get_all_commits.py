@@ -1,11 +1,12 @@
 from django.shortcuts import HttpResponse
 import csv
+from github import Github
 import json 
 from app.views import get_all_repos
 
 def get_all_commits(request):
     all_commits = []
-    repos = get_all_repos(request)
+    repos = get_all_repos()
     column_names = ['committer', 'timestamp']
 
     with open("all_commits.csv", "w") as csvfile:
@@ -22,7 +23,17 @@ def get_all_commits(request):
 
     sorted_commits = sorted(all_commits,key=lambda x: x['timestamp'], reverse=True)[:500]
     json_data = {}
-    json_data['all_commits'] = all_commits
+    json_data['all_commits'] = sorted_commits
     with open("data.json", "w") as outfile:
         json.dump(json_data, outfile, default=str, indent=4)
     return HttpResponse("commit")
+
+
+def get_all_repos():
+    github = Github('akansha-31', 'Siroliya@123')
+    organization = github.get_organization('coindcx-official')
+
+    repos = []
+    for repo in organization.get_repos():
+        repos.append(repo)
+    return repos
