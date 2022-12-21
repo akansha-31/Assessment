@@ -1,10 +1,12 @@
 from django.shortcuts import render, HttpResponse, redirect
 from app.forms import ValideGitUrl
 import re
+import csv
 import json 
 from urllib.parse import urlparse
 from github import Github
 from datetime import datetime
+import pandas as pd
 
 def validate(request):
     form = ValideGitUrl()
@@ -19,16 +21,23 @@ def validate(request):
     elif request.method == 'GET':
         return render(request,'index.html', {'form': form})
 
-
 def get_all_commits(request):
     all_commits = []
     repos = get_all_repos(request)
-    for repo in repos:
-        for commit in repo.get_commits():
-            commits = {}
-            commits['message'] = commit.commit.message
-            commits['timestamp'] = commit.commit.committer.date
-            all_commits.append(commits)
+    column_names = ['committer', 'timestamp']
+
+    with open("all_commits.csv", "w") as csvfile:
+        writer = csv.DictWriter(csvfile, fieldnames=column_names)
+        writer.writeheader()
+
+        for repo in repos:
+            for commit in repo.get_commits():
+                commits = {}
+                commits['committer'] = commit.commit.author.name
+                commits['timestamp'] = commit.commit.committer.date
+                writer.writerow(commits)
+                all_commits.append(commits)
+
     sorted_commits = sorted(all_commits,key=lambda x: x['timestamp'], reverse=True)[:500]
     json_data = {}
     json_data['all_commits'] = all_commits
@@ -37,10 +46,16 @@ def get_all_commits(request):
     return HttpResponse("commit")
 
 def get_all_repos(request):
-    github = Github("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")
-    organization = github.get_organization(request.session['organization'])
+    github = Github('akansha-31', 'Siroliya@123')
+    organization = github.get_organization('coindcx-official')
 
     repos = []
     for repo in organization.get_repos():
         repos.append(repo)
     return repos
+
+def get_top_contributors(request):
+    df = pd.read_csv('all_commits.csv')
+    top_contributors = dataframe['committer'].value_counts().nlargest(10).reset_index()
+    top_contributors.columns = ['author', 'commit_count']
+    top_contributors.to_csv('contributors.csv', index=False)
